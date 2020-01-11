@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  php:
+    build:
+      context: ./php
+    volumes:
+      - ./php/php.ini:/usr/local/etc/php/php.ini
+      - ./php/app-akasp.conf:/etc/apache2/conf-enabled/app-akasp.conf
+      - ./php/xdebug.log:/tmp/xdebug.log
+      - ./mine:/mine
+      - ./mine_data:/mine_data
+    ports:
+      - 8080:80
+
+  mysql:
+    image: mysql:5.7
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_ROOT_PASSWORD=pasuwa-do
+      - MYSQL_DATABASE=test1
+      - MYSQL_USER=user01
+      - MYSQL_PASSWORD=passwd123
+    ports:
+      - 3306:3306
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=mysql
+      - PMA_USER=root
+      - PMA_PASSWORD=pasuwa-do
+    links:
+      - mysql
+    ports:
+       - 8000:80
+    volumes:
+       - ./phpmyadmin/sessions:/sessions
+
